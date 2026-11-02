@@ -1,15 +1,8 @@
 import { supabase } from './supabase.js';
+export { countActiveOrders } from './load.js';
 
 export const ACTIVE_STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING'];
 
-export async function countActiveOrders() {
-  const { count, error } = await supabase
-    .from('orders')
-    .select('order_id', { count: 'exact', head: true })
-    .in('status', ACTIVE_STATUSES);
-  if (error) throw new Error('DB_ERROR');
-  return count ?? 0;
-}
 
 // Lưu đơn và các dòng món; nếu lưu dòng món lỗi thì xóa đơn vừa tạo.
 export async function saveOrder(fields, lines) {
