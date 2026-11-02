@@ -1,7 +1,8 @@
 import { supabase } from '../_lib/supabase.js';
 import { sendJson, sendError } from '../_lib/http.js';
 import { requireRole } from '../_lib/auth.js';
-import { getUserFromRequest } from '../_lib/session.js';
+import { getUserFromRequest, getSession } from '../_lib/session.js';
+import { getShopSettings } from '../_lib/shop.js';
 import { validateOrderInput } from '../_lib/core.js';
 import { placeOrder, OrderError } from '../_lib/place-order.js';
 import { catalogClient } from '../_lib/catalog-client.js';
@@ -9,6 +10,18 @@ import { countActiveOrders, saveOrder, publicOrder } from '../_lib/orders.js';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
+    const shop = await getShopSettings();
+const session = await getSession(req);
+const isStaff = Boolean(session) && ['staff', 'admin'].includes(session.role);
+
+if (!shop.acceptingOrders && !isStaff) {
+  return sendError(
+    res,
+    503,
+    'SHOP_PAUSED',
+    'Quán đang tạm ngưng nhận đơn online, vui lòng thử lại sau'
+  );
+}
     const errors = validateOrderInput(req.body);
     if (errors.length) return sendError(res, 400, 'BAD_REQUEST', `Dữ liệu sai: ${errors.join(', ')}`);
 
