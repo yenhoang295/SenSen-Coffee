@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đặt bàn | SENSEN COFFEE</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>SENSEN COFFEE</h1>
+    <nav>
+      <a href="index.html">Trang chủ</a>
+      <a href="menu.html">Menu</a>
+      <a href="login.html">Tài khoản</a>
+    </nav>
+  </header>
+
+  <main class="panel">
+    <h2>Đặt bàn</h2>
+
+    <form id="reservation-form" class="stack">
+      <label for="customer-name">Họ tên</label>
+      <input
+        id="customer-name"
+        type="text"
+        maxlength="60"
+        autocomplete="name"
+        required
+      >
+
+      <label for="phone">Số điện thoại</label>
+      <input
+        id="phone"
+        type="tel"
+        placeholder="10 số, bắt đầu bằng 0"
+        pattern="0[0-9]{9}"
+        autocomplete="tel"
+        required
+      >
+
+      <label for="party-size">Số người</label>
+      <select id="party-size" required>
+        <option value="">Chọn số người</option>
+        <option value="1">1 người</option>
+        <option value="2">2 người</option>
+        <option value="3">3 người</option>
+        <option value="4">4 người</option>
+        <option value="5">5 người</option>
+        <option value="6">6 người</option>
+        <option value="7">7 người</option>
+        <option value="8">8 người</option>
+        <option value="9">9 người</option>
+        <option value="10">10 người</option>
+        <option value="11">11 người</option>
+        <option value="12">12 người</option>
+      </select>
+
+      <label for="reserve-time">Ngày và giờ đến</label>
+      <input id="reserve-time" type="datetime-local" required>
+
+      <button id="find-tables" type="button">Tìm bàn trống</button>
+
+      <label for="table">Chọn bàn</label>
+      <select id="table" required disabled>
+        <option value="">Hãy tìm bàn trống trước</option>
+      </select>
+
+      <button id="submit" type="submit" disabled>Gửi yêu cầu đặt bàn</button>
+      <p id="message" role="status"></p>
+    </form>
+  </main>
+
+  <script type="module" src="js/reservation.js"></script>
+</body>
+</html>
