@@ -3,6 +3,20 @@ import { getAccessToken, signIn, signOut, getRole } from './session.js';
 const $ = id => document.getElementById(id);
 const money = n => new Intl.NumberFormat('vi-VN').format(n) + ' đ';
 
+const hhmm = value =>
+  new Date(value).toLocaleTimeString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
+const dayhh = value =>
+  new Date(value).toLocaleString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+
 function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -32,8 +46,6 @@ const PAID_LABEL = {
   REFUNDED: 'Đã hoàn',
 };
 
-// Bản sao quy tắc chuyển trạng thái để vẽ nút.
-// Máy chủ vẫn kiểm tra lại quyền chuyển trạng thái.
 const ACTIONS = {
   PENDING: [['CONFIRMED', 'Xác nhận'], ['REJECTED', 'Từ chối']],
   CONFIRMED: [['PREPARING', 'Bắt đầu pha chế'], ['CANCELLED', 'Hủy đơn']],
@@ -41,7 +53,13 @@ const ACTIONS = {
   READY: [['COMPLETED', 'Hoàn tất']],
 };
 
+const RESERVATION_ACTIONS = {
+  PENDING: [['CONFIRMED', 'Xác nhận'], ['CANCELLED', 'Hủy']],
+  CONFIRMED: [['COMPLETED', 'Khách đã đến'], ['CANCELLED', 'Hủy']],
+};
+
 let timer;
+let activeTab = 'orders';
 let acceptingOrders = true;
 
 async function api(path, options = {}) {
@@ -52,111 +70,111 @@ async function api(path, options = {}) {
     headers.authorization = `Bearer ${token}`;
   }
 
-  const r = await fetch(path, {
+  const response = await fetch(path, {
     ...options,
     headers: { ...headers, ...options.headers },
   });
 
-  const data = await r.json().catch(() => ({}));
+  const data = await response.json().catch(() => ({}));
 
-  if (!r.ok) {
-    throw new Error(data.message || `Lỗi ${r.status}`);
+  if (!response.ok) {
+    throw new Error(data.message || `Lỗi ${response.status}`);
   }
 
   return data;
 }
 
-async function patch(id, body) {
+// ---------- Đơn hàng ----------
+
+async function patchOrder(id, body) {
   try {
     await api(`/api/orders/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(body),
     });
     $('panel-msg').textContent = '';
-  } catch (e) {
-    $('panel-msg').textContent = e.message;
+  } catch (error) {
+    $('panel-msg').textContent = error.message;
   }
 
   loadOrders();
 }
 
-function renderOrder(o) {
+function renderOrder(order) {
   const card = el('article', 'order-card');
   const head = el('div', 'order-head');
 
   head.append(
-    el('strong', '', `#${o.orderId}`),
-    el('span', 'tag', STATUS_LABEL[o.status] ?? o.status),
-    el(
-      'span',
-      '',
-      new Date(o.createdAt).toLocaleTimeString('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    )
+    el('strong', '', `#${order.orderId}`),
+    el('span', 'tag', STATUS_LABEL[order.status] ?? order.status),
+    el('span', '', hhmm(order.createdAt))
   );
-
   card.append(head);
 
-  const who = `${o.customerName} · ${o.phone}` +
-    (o.tableNo ? ` · Bàn ${o.tableNo}` : '');
-
-  card.append(el('div', '', who));
-
-  if (o.pickupTime) {
-    const t = new Date(o.pickupTime).toLocaleTimeString('vi-VN', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    card.append(el('div', '', `Giờ nhận: ${t}`));
-  }
-
-  const ul = el('ul', 'plain');
-
-  for (const i of o.items) {
-    ul.append(el('li', '', `${i.productName} x ${i.quantity}`));
-  }
-
-  card.append(ul);
   card.append(
     el(
       'div',
       '',
-      `${money(o.totalAmount)} · ${PAY_LABEL[o.paymentMethod]} · ${PAID_LABEL[o.paymentStatus]}`
+      `${order.customerName} · ${order.phone}` +
+        (order.tableNo ? ` · Bàn ${order.tableNo}` : '')
     )
   );
 
-  if (o.rejectReason) {
-    card.append(el('div', 'bad', `Lý do: ${o.rejectReason}`));
+  if (order.groupCode) {
+    card.append(el('div', '', `Đơn nhóm ${order.groupCode}`));
+  }
+
+  if (order.pickupTime) {
+    card.append(el('div', '', `Giờ nhận: ${hhmm(order.pickupTime)}`));
+  }
+
+  const list = el('ul', 'plain');
+  for (const item of order.items) {
+    list.append(el('li', '', `${item.productName} x ${item.quantity}`));
+  }
+  card.append(list);
+
+  card.append(
+    el(
+      'div',
+      '',
+      `${money(order.totalAmount)} · ${PAY_LABEL[order.paymentMethod]} · ${PAID_LABEL[order.paymentStatus]}`
+    )
+  );
+
+  if (order.pointsEarned) {
+    card.append(el('div', 'ok', `Đã cộng ${order.pointsEarned} điểm`));
+  }
+
+  if (order.rejectReason) {
+    card.append(el('div', 'bad', `Lý do: ${order.rejectReason}`));
   }
 
   const actions = el('div', 'actions');
-  const closed = ['REJECTED', 'CANCELLED', 'COMPLETED'].includes(o.status);
+  const closed = ['REJECTED', 'CANCELLED', 'COMPLETED'].includes(order.status);
 
-  if (o.paymentStatus === 'UNPAID' && !closed) {
-    const pay = el('button', '', 'Đã thu tiền');
-    pay.type = 'button';
-    pay.addEventListener('click', () => {
-      patch(o.orderId, { paymentStatus: 'PAID' });
+  if (order.paymentStatus === 'UNPAID' && !closed) {
+    const paidButton = el('button', '', 'Đã thu tiền');
+    paidButton.type = 'button';
+    paidButton.addEventListener('click', () => {
+      patchOrder(order.orderId, { paymentStatus: 'PAID' });
     });
-    actions.append(pay);
+    actions.append(paidButton);
   }
 
-  for (const [next, label] of ACTIONS[o.status] ?? []) {
-    const isDanger = next === 'REJECTED' || next === 'CANCELLED';
+  for (const [nextStatus, label] of ACTIONS[order.status] ?? []) {
+    const isDanger = nextStatus === 'REJECTED' || nextStatus === 'CANCELLED';
     const button = el('button', isDanger ? 'danger' : '', label);
     button.type = 'button';
 
     button.addEventListener('click', () => {
-      if (next === 'REJECTED') {
+      if (nextStatus === 'REJECTED') {
         const reason = prompt('Lý do từ chối đơn:');
-
         if (!reason || !reason.trim()) return;
 
-        patch(o.orderId, { status: next, reason });
+        patchOrder(order.orderId, { status: nextStatus, reason });
       } else {
-        patch(o.orderId, { status: next });
+        patchOrder(order.orderId, { status: nextStatus });
       }
     });
 
@@ -175,18 +193,122 @@ async function loadOrders() {
       '/api/orders' + (status ? `?status=${encodeURIComponent(status)}` : '')
     );
 
-    const box = $('orders');
-    box.replaceChildren(...orders.map(renderOrder));
+    $('orders').replaceChildren(...orders.map(renderOrder));
     $('empty').hidden = orders.length > 0;
-  } catch (e) {
-    $('panel-msg').textContent = e.message;
+  } catch (error) {
+    $('panel-msg').textContent = error.message;
   }
 }
 
-// Đọc cài đặt quán từ API và cập nhật các nút trên trang.
-async function loadShop() {
-  const message = $('shop-msg');
+// ---------- Đặt bàn ----------
 
+async function patchReservation(id, status) {
+  try {
+    await api(`/api/reservations/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+    $('panel-msg').textContent = '';
+  } catch (error) {
+    $('panel-msg').textContent = error.message;
+  }
+
+  loadReservations();
+}
+
+function renderReservation(reservation) {
+  const card = el('article', 'order-card');
+  const head = el('div', 'order-head');
+
+  head.append(
+    el(
+      'strong',
+      '',
+      `#${reservation.reservationId} · Bàn ${reservation.tableNo}`
+    ),
+    el(
+      'span',
+      'tag',
+      STATUS_LABEL[reservation.status] ?? reservation.status
+    )
+  );
+  card.append(head);
+
+  card.append(
+    el(
+      'div',
+      '',
+      `${dayhh(reservation.reserveTime)} · ${reservation.partySize} người (bàn ${reservation.seats} chỗ)`
+    )
+  );
+  card.append(
+    el('div', '', `${reservation.customerName} · ${reservation.phone}`)
+  );
+
+  const actions = el('div', 'actions');
+
+  for (const [nextStatus, label] of RESERVATION_ACTIONS[reservation.status] ?? []) {
+    const button = el(
+      'button',
+      nextStatus === 'CANCELLED' ? 'danger' : '',
+      label
+    );
+    button.type = 'button';
+    button.addEventListener('click', () => {
+      patchReservation(reservation.reservationId, nextStatus);
+    });
+    actions.append(button);
+  }
+
+  card.append(actions);
+  return card;
+}
+
+async function loadReservations() {
+  const status = $('r-filter').value;
+
+  try {
+    const reservations = await api(
+      '/api/reservations' +
+        (status ? `?status=${encodeURIComponent(status)}` : '')
+    );
+
+    $('reservations').replaceChildren(...reservations.map(renderReservation));
+    $('r-empty').hidden = reservations.length > 0;
+  } catch (error) {
+    $('panel-msg').textContent = error.message;
+  }
+}
+
+// ---------- Nạp ví cho khách ----------
+
+async function topup() {
+  const message = $('topup-msg');
+  message.className = '';
+  message.textContent = '';
+
+  try {
+    const result = await api('/api/wallet/topup', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: $('topup-email').value.trim(),
+        amount: Number($('topup-amount').value),
+      }),
+    });
+
+    message.className = 'ok';
+    message.textContent =
+      `Đã nạp. Số dư mới của ${result.email}: ${money(result.balance)}`;
+    $('topup-amount').value = '';
+  } catch (error) {
+    message.className = 'bad';
+    message.textContent = error.message;
+  }
+}
+
+// ---------- Cài đặt quán từ Ngày 3 ----------
+
+async function loadShop() {
   try {
     const shop = await api('/api/shop');
 
@@ -197,17 +319,16 @@ async function loadShop() {
       ? 'Tạm dừng nhận đơn'
       : 'Mở lại nhận đơn';
 
-    message.textContent = acceptingOrders
+    $('shop-msg').textContent = acceptingOrders
       ? 'Quán đang nhận đơn online.'
       : 'Quán đang tạm dừng nhận đơn online.';
-  } catch (e) {
-    message.textContent = `Không tải được cài đặt quán: ${e.message}`;
+  } catch (error) {
+    $('shop-msg').textContent =
+      `Không tải được cài đặt quán: ${error.message}`;
   }
 }
 
-// Lưu số nhân viên pha chế.
 async function saveShop() {
-  const message = $('shop-msg');
   const baristas = Number($('baristas').value);
 
   try {
@@ -217,15 +338,13 @@ async function saveShop() {
     });
 
     acceptingOrders = shop.acceptingOrders;
-    message.textContent = 'Đã lưu số nhân viên pha chế.';
-  } catch (e) {
-    message.textContent = `Không lưu được: ${e.message}`;
+    $('shop-msg').textContent = 'Đã lưu số nhân viên pha chế.';
+  } catch (error) {
+    $('shop-msg').textContent = `Không lưu được: ${error.message}`;
   }
 }
 
-// Tạm dừng hoặc mở lại việc nhận đơn online.
 async function toggleOrders() {
-  const message = $('shop-msg');
   const nextValue = !acceptingOrders;
 
   try {
@@ -235,16 +354,41 @@ async function toggleOrders() {
     });
 
     acceptingOrders = shop.acceptingOrders;
-
     $('toggle-orders').textContent = acceptingOrders
       ? 'Tạm dừng nhận đơn'
       : 'Mở lại nhận đơn';
 
-    message.textContent = acceptingOrders
+    $('shop-msg').textContent = acceptingOrders
       ? 'Quán đã nhận đơn online trở lại.'
       : 'Quán đã tạm dừng nhận đơn online.';
-  } catch (e) {
-    message.textContent = `Không cập nhật được trạng thái quán: ${e.message}`;
+  } catch (error) {
+    $('shop-msg').textContent =
+      `Không cập nhật được trạng thái quán: ${error.message}`;
+  }
+}
+
+// ---------- Chuyển tab ----------
+
+function showTab(name) {
+  activeTab = name;
+
+  for (const button of document.querySelectorAll('.tab')) {
+    button.classList.toggle('active', button.dataset.tab === name);
+  }
+
+  for (const tabName of ['orders', 'reservations', 'wallet']) {
+    $(`tab-${tabName}`).hidden = tabName !== name;
+  }
+
+  $('panel-msg').textContent = '';
+
+  if (name === 'orders') {
+    loadShop();
+    loadOrders();
+  }
+
+  if (name === 'reservations') {
+    loadReservations();
   }
 }
 
@@ -258,12 +402,14 @@ async function showPanel() {
   clearInterval(timer);
 
   if (allowed) {
-    loadShop();
-    loadOrders();
-    timer = setInterval(loadOrders, 15000);
+    showTab(activeTab);
+    timer = setInterval(() => {
+      if (activeTab === 'orders') loadOrders();
+    }, 15000);
   } else if (role) {
     await signOut();
-    $('login-msg').textContent = 'Tài khoản này không có quyền nhân viên.';
+    $('login-msg').textContent =
+      'Tài khoản này không có quyền nhân viên.';
   }
 }
 
@@ -289,7 +435,14 @@ $('logout').addEventListener('click', async () => {
 
 $('filter').addEventListener('change', loadOrders);
 $('refresh').addEventListener('click', loadOrders);
+$('r-filter').addEventListener('change', loadReservations);
+$('r-refresh').addEventListener('click', loadReservations);
+$('topup').addEventListener('click', topup);
 $('save-shop').addEventListener('click', saveShop);
 $('toggle-orders').addEventListener('click', toggleOrders);
+
+for (const button of document.querySelectorAll('.tab')) {
+  button.addEventListener('click', () => showTab(button.dataset.tab));
+}
 
 showPanel();

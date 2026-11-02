@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ví và điểm | SENSEN COFFEE</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>SENSEN COFFEE</h1>
+    <nav><a href="menu.html">Menu</a><a href="login.html">Tài khoản</a></nav>
+  </header>
+  <div class="panel" id="need-login" hidden>
+    <p>Bạn cần đăng nhập để xem ví và điểm.</p>
+    <a href="login.html">Đăng nhập</a>
+  </div>
+  <div class="panel" id="error" hidden>
+    <p class="bad">Không tải được ví, thử lại sau.</p>
+  </div>
+  <div class="panel" id="wallet-box" hidden>
+    <h2>Ví và điểm tích lũy</h2>
+    <p id="who"></p>
+    <div class="total"><span>Số dư ví</span><span id="balance">0 đ</span></div>
+    <div class="total"><span>Điểm tích lũy</span><span id="points">0</span></div>
+    <p>Nạp tiền tại quầy: nhân viên sẽ nạp vào ví theo email đăng ký của bạn. Mỗi 10.000 đồng của đơn hoàn tất được 1 điểm.</p>
+    <h3>Lịch sử giao dịch</h3>
+    <p id="no-tx" hidden>Chưa có giao dịch.</p>
+    <ul id="tx" class="plain"></ul>
+  </div>
+  <script type="module" src="js/wallet.js"></script>
+</body>
+</html>
