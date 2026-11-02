@@ -185,6 +185,84 @@ function renderOrder(order) {
   return card;
 }
 
+function renderReport(report) {
+  $('report-revenue').textContent = money(report.revenue);
+  $('report-count').textContent = String(report.completedPaidOrders);
+
+  const productBox = $('report-products');
+  productBox.replaceChildren();
+  if (!report.bestSellers.length) {
+    productBox.append(el('p', '', 'Chưa có đơn hoàn tất trong khoảng ngày này.'));
+  } else {
+    const table = document.createElement('table');
+    table.className = 'report-table';
+    const head = document.createElement('tr');
+    for (const title of ['Món', 'Số lượng', 'Doanh thu']) {
+      const th = document.createElement('th');
+      th.textContent = title;
+      head.append(th);
+    }
+    const thead = document.createElement('thead');
+    thead.append(head);
+    table.append(thead);
+    const tbody = document.createElement('tbody');
+    for (const item of report.bestSellers) {
+      const row = document.createElement('tr');
+      for (const value of [item.productName, item.quantity, money(item.revenue)]) {
+        const cell = document.createElement('td');
+        cell.textContent = String(value);
+        row.append(cell);
+      }
+      tbody.append(row);
+    }
+    table.append(tbody);
+    productBox.append(table);
+  }
+
+  const hoursBox = $('report-hours');
+  hoursBox.replaceChildren();
+  const maxOrders = Math.max(1, ...report.peakHours.map(item => item.orders));
+  for (const item of report.peakHours) {
+    const hour = el('div', 'report-hour');
+    hour.append(el('strong', '', `${String(item.hour).padStart(2, '0')}:00`));
+    hour.append(el('div', '', `${item.orders} đơn`));
+    const bar = el('div', 'report-hour-bar');
+    bar.style.width = `${Math.max(4, item.orders / maxOrders * 100)}%`;
+    hour.append(bar);
+    hoursBox.append(hour);
+  }
+}
+
+function setDefaultReportDates() {
+  const today = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(new Date());
+  $('report-from').value = today;
+  $('report-to').value = today;
+}
+
+async function loadReport() {
+  const from = $('report-from').value;
+  const to = $('report-to').value;
+  const message = $('report-message');
+  message.className = '';
+  message.textContent = '';
+  if (!from || !to || from > to) {
+    message.className = 'bad';
+    message.textContent = 'Chọn khoảng ngày hợp lệ trước khi xem.';
+    return;
+  }
+  try {
+    const query = new URLSearchParams({ from, to });
+    const report = await api(`/api/reports?${query}`);
+    renderReport(report);
+    message.textContent = `Báo cáo từ ${from} đến ${to}.`;
+  } catch (error) {
+    message.className = 'bad';
+    message.textContent = error.message;
+  }
+}
+
 async function loadOrders() {
   const status = $('filter').value;
 
@@ -376,7 +454,7 @@ function showTab(name) {
     button.classList.toggle('active', button.dataset.tab === name);
   }
 
-  for (const tabName of ['orders', 'reservations', 'wallet']) {
+  for (const tabName of ['orders', 'reports', 'reservations', 'wallet']) {
     $(`tab-${tabName}`).hidden = tabName !== name;
   }
 
@@ -389,6 +467,10 @@ function showTab(name) {
 
   if (name === 'reservations') {
     loadReservations();
+  }
+
+  if (name === 'reports') {
+    loadReport();
   }
 }
 
@@ -438,6 +520,7 @@ $('refresh').addEventListener('click', loadOrders);
 $('r-filter').addEventListener('change', loadReservations);
 $('r-refresh').addEventListener('click', loadReservations);
 $('topup').addEventListener('click', topup);
+$('report-load').addEventListener('click', loadReport);
 $('save-shop').addEventListener('click', saveShop);
 $('toggle-orders').addEventListener('click', toggleOrders);
 
@@ -446,3 +529,4 @@ for (const button of document.querySelectorAll('.tab')) {
 }
 
 showPanel();
+setDefaultReportDates();

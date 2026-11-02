@@ -50,3 +50,12 @@ main.staff { max-width: 1000px; margin: 16px auto; padding: 0 16px; }
 .actions button.danger { color: #b42318; border-color: #f0b8b3; }
 .ok { color: #1a7f37; } .bad { color: #b42318; }
 [hidden] { display: none !important; }
+.report-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 16px 0; }
+.report-metrics article { display: flex; flex-direction: column; gap: 8px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.report-metrics strong { font-size: 22px; }
+.report-table { width: 100%; border-collapse: collapse; background: #fff; }
+.report-table th, .report-table td { padding: 8px; border: 1px solid var(--line); text-align: left; }
+.report-hours { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 8px; }
+.report-hour { padding: 9px; border-radius: 8px; background: #fff; border: 1px solid var(--line); }
+.report-hour-bar { height: 6px; margin-top: 6px; border-radius: 5px; background: var(--accent); }
+.report-note { color: #6b5a4c; font-size: 13px; }
