@@ -4,6 +4,14 @@ import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js';
 const $ = id => document.getElementById(id);
 const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+// Mỗi vai trò vào một trang riêng sau khi đăng nhập.
+const ROLE_HOME = { customer: 'menu.html', staff: 'staff.html', admin: 'admin.html' };
+
+async function goHome(userId) {
+  const { data } = await sb.from('profiles').select('role').eq('user_id', userId).maybeSingle();
+  location.href = ROLE_HOME[data?.role] ?? 'menu.html';
+}
+
 function show(message, isError = false) {
   const box = $('message');
   box.textContent = message;
@@ -30,13 +38,13 @@ $('register').addEventListener('click', async () => {
 });
 
 $('login').addEventListener('click', async () => {
-  const { error } = await sb.auth.signInWithPassword({
+  const { data, error } = await sb.auth.signInWithPassword({
     email: $('email').value.trim(),
     password: $('password').value,
   });
   if (error) return show('Sai email hoặc mật khẩu.', true);
   show('Đăng nhập thành công.');
-  refresh();
+  goHome(data.user.id);
 });
 
 $('logout').addEventListener('click', async () => {

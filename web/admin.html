@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý | SENSEN COFFEE</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
+</head>
+<body>
+  <header class="top">
+    <h1>SENSEN COFFEE · Quản lý</h1>
+    <nav><a href="menu.html">Menu</a></nav>
+  </header>
+
+  <div class="panel" id="login-panel">
+    <h2>Đăng nhập quản lý</h2>
+    <input id="email" type="email" placeholder="Email" autocomplete="email">
+    <input id="password" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+    <button id="login" type="button">Đăng nhập</button>
+    <p id="login-msg" class="bad" role="status"></p>
+  </div>
+
+  <main class="staff" id="panel" hidden>
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="reports">Thống kê</button>
+      <button type="button" class="tab" data-tab="products">Quản lý món</button>
+      <button id="logout" type="button">Đăng xuất</button>
+    </div>
+
+    <p id="panel-msg" class="bad" role="status"></p>
+
+    <section id="tab-reports">
+      <div class="panel report-panel">
+        <h2>Báo cáo doanh thu</h2>
+        <div class="tools">
+          <label for="report-from">Từ ngày</label>
+          <input id="report-from" type="date">
+          <label for="report-to">Đến ngày</label>
+          <input id="report-to" type="date">
+          <button id="report-load" type="button">Xem báo cáo</button>
+        </div>
+        <p id="report-message" role="status"></p>
+        <div class="report-metrics">
+          <article><span>Doanh thu</span><strong id="report-revenue">—</strong></article>
+          <article><span>Đơn hoàn tất, đã thanh toán</span><strong id="report-count">—</strong></article>
+        </div>
+        <h3>Món bán chạy (tối đa 10)</h3>
+        <div id="report-products"></div>
+        <h3>Giờ cao điểm (theo số đơn)</h3>
+        <div id="report-hours"></div>
+        <p class="report-note">Chỉ tính đơn đã hoàn tất và đã thanh toán. Múi giờ: Việt Nam.</p>
+      </div>
+    </section>
+
+    <section id="tab-products" hidden>
+      <div class="panel">
+        <h2>Thêm món mới</h2>
+        <input id="p-name" placeholder="Tên món">
+        <input id="p-desc" placeholder="Mô tả">
+        <select id="p-category"></select>
+        <input id="p-price" type="number" min="0" step="1000" placeholder="Giá (đồng)">
+        <input id="p-qty" type="number" min="0" step="1" placeholder="Số lượng tồn">
+        <input id="p-image" placeholder="Ảnh, ví dụ images/ten-mon.jpg (có thể để trống)">
+        <button id="p-add" type="button">Thêm món</button>
+        <p id="p-msg" role="status"></p>
+      </div>
+
+      <div class="tools">
+        <button id="p-refresh" type="button">Làm mới danh sách</button>
+      </div>
+      <div id="products"></div>
+    </section>
+  </main>
+
+  <script type="module" src="js/admin.js"></script>
+  <script type="module" src="js/nav.js"></script>
+</body>
+</html>
