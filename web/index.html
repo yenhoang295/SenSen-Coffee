@@ -9,35 +9,22 @@
 <body>
   <header class="top">
     <h1>SENSEN COFFEE</h1>
-    <nav>
-      <a href="menu.html">Menu</a>
-      <a href="login.html">Tài khoản</a>
-    </nav>
+    <nav><a href="menu.html">Menu</a><a href="advisor.html">Tư vấn</a><a href="login.html">Tài khoản</a></nav>
   </header>
-
   <div id="queue-banner" hidden></div>
-
   <main style="max-width:720px;margin:24px auto;padding:0 16px">
     <h2>Đặt đồ uống nhanh, biết trước quán đông hay vắng</h2>
     <p><a href="menu.html">Xem menu và đặt món</a></p>
     <p>Kiểm tra dịch vụ: <span id="health">đang kiểm tra...</span></p>
   </main>
-
+  <script type="module" src="js/queue.js"></script>
   <script type="module">
     import { captureTable } from './js/cart.js';
     captureTable();
-
     const el = document.getElementById('health');
-    fetch('/api/health')
-      .then(r => r.json())
-      .then(d => {
-        el.textContent = d.ok ? 'API hoạt động' : 'API lỗi';
-        el.className = d.ok ? 'ok' : 'bad';
-      })
-      .catch(() => {
-        el.textContent = 'API chưa chạy';
-        el.className = 'bad';
-      });
+    fetch('/api/health').then(r => r.json())
+      .then(d => { el.textContent = d.ok ? 'API hoạt động' : 'API lỗi'; el.className = d.ok ? 'ok' : 'bad'; })
+      .catch(() => { el.textContent = 'API chưa chạy'; el.className = 'bad'; });
   </script>
 </body>
 </html>

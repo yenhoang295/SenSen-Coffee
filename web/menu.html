@@ -9,7 +9,7 @@
 <body>
   <header class="top">
     <h1>SENSEN COFFEE <small id="table-info"></small></h1>
-    <nav><a href="index.html">Trang chủ</a><a href="login.html">Tài khoản</a></nav>
+    <nav><a href="index.html">Trang chủ</a><a href="advisor.html">Tư vấn</a><a href="login.html">Tài khoản</a></nav>
   </header>
   <div id="queue-banner" hidden></div>
   <main class="wrap">
@@ -26,9 +26,10 @@
       <p id="cart-empty">Chưa có món nào.</p>
       <ul id="cart-list"></ul>
       <div class="total"><span>Tổng</span><span id="cart-total">0 đ</span></div>
-      <button id="checkout" type="button" disabled title="Mở ở Ngày 3">Đặt món</button>
+      <a id="checkout" href="cart.html">Đặt món</a>
     </aside>
   </main>
+  <script type="module" src="js/queue.js"></script>
   <script type="module" src="js/menu.js"></script>
 </body>
 </html>
