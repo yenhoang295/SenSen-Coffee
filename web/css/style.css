@@ -49,3 +49,4 @@ main.staff { max-width: 1000px; margin: 16px auto; padding: 0 16px; }
 .actions button, .tools button, .tools select { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: #fff; cursor: pointer; }
 .actions button.danger { color: #b42318; border-color: #f0b8b3; }
 .ok { color: #1a7f37; } .bad { color: #b42318; }
+[hidden] { display: none !important; }

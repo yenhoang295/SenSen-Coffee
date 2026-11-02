@@ -33,7 +33,7 @@ function renderSummary() {
   if (table) $('table-info').textContent = `Bàn số ${table}`;
 }
 
-// Tạo các khung giờ nhận món, có tính thời gian chờ hiện tại.
+// Tạo các khung giờ nhận món theo thời gian chờ hiện tại.
 async function fillPickupSlots() {
   const select = $('pickup');
   let eta = 0;
@@ -72,6 +72,38 @@ async function fillPickupSlots() {
   }
 }
 
+// Hiện số dư ví và điểm nếu khách đã đăng nhập.
+async function loadWallet() {
+  const info = $('wallet-info');
+  const token = await getAccessToken();
+
+  if (!token) {
+    info.textContent = 'Đăng nhập để thanh toán bằng ví và tích điểm.';
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/wallet/me', {
+      headers: { authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+      info.textContent = 'Không tải được số dư ví.';
+      return;
+    }
+
+    const wallet = await response.json();
+    info.textContent =
+      `Số dư ví: ${money(wallet.balance)} · Điểm: ${wallet.points}`;
+
+    if (wallet.fullName && !$('name').value) {
+      $('name').value = wallet.fullName;
+    }
+  } catch {
+    info.textContent = 'Không tải được thông tin ví.';
+  }
+}
+
 function showDone(data, phone, payment) {
   $('form-panel').hidden = true;
 
@@ -84,7 +116,9 @@ function showDone(data, phone, payment) {
   box.append(el('p', '', `Tổng tiền: ${money(data.totalAmount)}`));
 
   if (data.etaMinutes) {
-    box.append(el('p', '', `Thời gian dự kiến: khoảng ${data.etaMinutes} phút`));
+    box.append(
+      el('p', '', `Thời gian dự kiến: khoảng ${data.etaMinutes} phút`)
+    );
   }
 
   if (payment === 'TRANSFER') {
@@ -103,6 +137,14 @@ function showDone(data, phone, payment) {
       qr.hidden = true;
     });
     box.append(qr);
+  } else if (payment === 'WALLET') {
+    box.append(
+      el(
+        'p',
+        '',
+        'Đã thanh toán bằng ví SENSEN. Điểm được cộng khi đơn hoàn tất.'
+      )
+    );
   } else {
     box.append(el('p', '', 'Thanh toán tiền mặt khi nhận món.'));
   }
@@ -138,7 +180,16 @@ $('order-form').addEventListener('submit', async event => {
 
   const headers = { 'content-type': 'application/json' };
   const token = await getAccessToken();
-  if (token) headers.authorization = `Bearer ${token}`;
+
+  if (token) {
+    headers.authorization = `Bearer ${token}`;
+  }
+
+  if (payment === 'WALLET' && !token) {
+    message.textContent =
+      'Hãy đăng nhập ở mục Tài khoản để thanh toán bằng ví.';
+    return;
+  }
 
   const button = $('submit');
   button.disabled = true;
@@ -153,7 +204,8 @@ $('order-form').addEventListener('submit', async event => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      message.textContent = data.message || 'Không đặt được món, thử lại sau.';
+      message.textContent =
+        data.message || 'Không đặt được món, thử lại sau.';
       button.disabled = false;
       return;
     }
@@ -172,4 +224,5 @@ if (cart.length === 0) {
 } else {
   renderSummary();
   fillPickupSlots();
+  loadWallet();
 }

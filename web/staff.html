@@ -21,47 +21,87 @@
   </div>
 
   <main class="staff" id="panel" hidden>
-    <section class="panel" id="shop-settings">
-      <h2>Cài đặt quán</h2>
-
-      <label for="baristas">Số nhân viên pha chế đang làm:</label>
-      <select id="baristas">
-        <option value="1">1 nhân viên</option>
-        <option value="2">2 nhân viên</option>
-        <option value="3">3 nhân viên</option>
-        <option value="4">4 nhân viên</option>
-        <option value="5">5 nhân viên</option>
-        <option value="6">6 nhân viên</option>
-        <option value="7">7 nhân viên</option>
-        <option value="8">8 nhân viên</option>
-        <option value="9">9 nhân viên</option>
-        <option value="10">10 nhân viên</option>
-      </select>
-
-      <button id="save-shop" type="button">Lưu số nhân viên</button>
-      <button id="toggle-orders" type="button">Tạm dừng nhận đơn</button>
-
-      <p id="shop-msg" role="status"></p>
-    </section>
-
-    <div class="tools">
-      <select id="filter">
-        <option value="">Tất cả đơn</option>
-        <option value="PENDING">Chờ xác nhận</option>
-        <option value="CONFIRMED">Đã xác nhận</option>
-        <option value="PREPARING">Đang pha chế</option>
-        <option value="READY">Sẵn sàng</option>
-        <option value="COMPLETED">Hoàn tất</option>
-        <option value="REJECTED">Đã từ chối</option>
-        <option value="CANCELLED">Đã hủy</option>
-      </select>
-      <button id="refresh" type="button">Làm mới</button>
+    <div class="tabs">
+      <button type="button" class="tab active" data-tab="orders">Đơn hàng</button>
+      <button type="button" class="tab" data-tab="reservations">Đặt bàn</button>
+      <button type="button" class="tab" data-tab="wallet">Nạp ví</button>
       <button id="logout" type="button">Đăng xuất</button>
     </div>
 
     <p id="panel-msg" class="bad" role="status"></p>
-    <p id="empty" hidden>Chưa có đơn nào.</p>
-    <div id="orders" class="orders"></div>
+
+    <section id="tab-orders">
+      <div class="panel">
+        <h2>Cài đặt quán</h2>
+
+        <label for="baristas">Số nhân viên pha chế đang làm:</label>
+        <select id="baristas">
+          <option value="1">1 nhân viên</option>
+          <option value="2">2 nhân viên</option>
+          <option value="3">3 nhân viên</option>
+          <option value="4">4 nhân viên</option>
+          <option value="5">5 nhân viên</option>
+          <option value="6">6 nhân viên</option>
+          <option value="7">7 nhân viên</option>
+          <option value="8">8 nhân viên</option>
+          <option value="9">9 nhân viên</option>
+          <option value="10">10 nhân viên</option>
+        </select>
+
+        <button id="save-shop" type="button">Lưu số nhân viên</button>
+        <button id="toggle-orders" type="button">Tạm dừng nhận đơn</button>
+        <p id="shop-msg" role="status"></p>
+      </div>
+
+      <div class="tools">
+        <select id="filter">
+          <option value="">Tất cả đơn</option>
+          <option value="PENDING">Chờ xác nhận</option>
+          <option value="CONFIRMED">Đã xác nhận</option>
+          <option value="PREPARING">Đang pha chế</option>
+          <option value="READY">Sẵn sàng</option>
+          <option value="COMPLETED">Hoàn tất</option>
+          <option value="REJECTED">Đã từ chối</option>
+          <option value="CANCELLED">Đã hủy</option>
+        </select>
+        <button id="refresh" type="button">Làm mới</button>
+      </div>
+
+      <p id="empty" hidden>Chưa có đơn nào.</p>
+      <div id="orders" class="orders"></div>
+    </section>
+
+    <section id="tab-reservations" hidden>
+      <div class="tools">
+        <select id="r-filter">
+          <option value="">Tất cả</option>
+          <option value="PENDING">Chờ xác nhận</option>
+          <option value="CONFIRMED">Đã xác nhận</option>
+          <option value="COMPLETED">Đã xong</option>
+          <option value="CANCELLED">Đã hủy</option>
+        </select>
+        <button id="r-refresh" type="button">Làm mới</button>
+      </div>
+
+      <p id="r-empty" hidden>Chưa có lượt đặt bàn nào.</p>
+      <div id="reservations" class="orders"></div>
+    </section>
+
+    <section id="tab-wallet" hidden>
+      <div class="panel" style="margin:0">
+        <h2>Nạp tiền vào ví khách</h2>
+        <input id="topup-email" type="email" placeholder="Email đăng ký của khách">
+        <input
+          id="topup-amount"
+          type="number"
+          min="1000"
+          step="1000"
+          placeholder="Số tiền (bội số của 1.000 đồng)"
+        >
+        <button id="topup" type="button">Nạp tiền</button>
+        <p id="topup-msg" role="status"></p>
+      </div>
+    </section>
   </main>
 
   <script type="module" src="js/staff.js"></script>
