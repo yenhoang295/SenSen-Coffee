@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menu | SENSEN COFFEE</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>SENSEN COFFEE <small id="table-info"></small></h1>
+    <nav><a href="index.html">Trang chủ</a><a href="login.html">Tài khoản</a></nav>
+  </header>
+  <div id="queue-banner" hidden></div>
+  <main class="wrap">
+    <section>
+      <div class="tools">
+        <input id="search" type="search" placeholder="Tìm món theo tên">
+        <div id="chips" class="tools"></div>
+      </div>
+      <p id="status" role="status"></p>
+      <div id="grid"></div>
+    </section>
+    <aside class="cart">
+      <h2>Giỏ hàng (<span id="cart-count">0</span>)</h2>
+      <p id="cart-empty">Chưa có món nào.</p>
+      <ul id="cart-list"></ul>
+      <div class="total"><span>Tổng</span><span id="cart-total">0 đ</span></div>
+      <button id="checkout" type="button" disabled title="Mở ở Ngày 3">Đặt món</button>
+    </aside>
+  </main>
+  <script type="module" src="js/menu.js"></script>
+</body>
+</html>
