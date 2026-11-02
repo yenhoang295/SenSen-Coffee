@@ -1,0 +1,31 @@
+# Hợp đồng dịch vụ (BA hoàn thiện dần; Dev đối chiếu khi code)
+openapi: 3.0.3
+info:
+  title: SENSEN COFFEE API
+  version: 0.1.0
+paths:
+  /api/health:
+    get:
+      summary: Kiểm tra API còn sống
+      responses:
+        '200':
+          description: OK
+  /api/catalog/products:
+    get:
+      summary: Danh sách món (lọc category, q, flag)
+      responses:
+        '200':
+          description: Mảng sản phẩm
+  /api/orders:
+    post:
+      summary: Tạo đơn từ giỏ hàng
+      responses:
+        '201':
+          description: Đơn đã tạo
+  /api/queue/status:
+    get:
+      summary: Quán đang vắng hay đông, thời gian dự kiến
+      responses:
+        '200':
+          description: level, activeOrders, etaMinutes, updatedAt
+# TODO (BA): thêm groups, reservations, wallet, advisor, reports
