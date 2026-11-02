@@ -454,7 +454,7 @@ function showTab(name) {
     button.classList.toggle('active', button.dataset.tab === name);
   }
 
-  for (const tabName of ['orders', 'pos', 'reports', 'reservations', 'wallet']) {
+  for (const tabName of ['orders', 'reports', 'reservations', 'wallet']) {
     $(`tab-${tabName}`).hidden = tabName !== name;
   }
 
