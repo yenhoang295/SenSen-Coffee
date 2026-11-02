@@ -17,6 +17,7 @@ import walletMe from '../server/wallet/me.js';
 import walletPoints from '../server/wallet/points.js';
 import walletRefund from '../server/wallet/refund.js';
 import walletTopup from '../server/wallet/topup.js';
+import reports from '../server/reports/index.js';
 
 // Đường dẫn cụ thể đặt trước đường dẫn có :id.
 const ROUTES = [
@@ -39,6 +40,7 @@ const ROUTES = [
   ['wallet/points', walletPoints],
   ['wallet/refund', walletRefund],
   ['wallet/topup', walletTopup],
+  ['reports', reports],
 ];
 
 function match(path) {
