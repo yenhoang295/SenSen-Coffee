@@ -1,0 +1,15 @@
+name: CI
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Chạy test nếu đã có package.json
+        run: |
+          if [ -f package.json ]; then npm ci && npm test; else echo "Chưa có package.json, bỏ qua"; fi
