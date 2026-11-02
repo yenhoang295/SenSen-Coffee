@@ -53,4 +53,33 @@ $('logout').addEventListener('click', async () => {
   refresh();
 });
 
+// Khung tài khoản demo, chỉ hiện khi mở login.html?demo=1
+const DEMO_ACCOUNTS = [
+  ['Khách hàng', 'khach@sensen.demo'],
+  ['Nhân viên', 'nhanvien1@sensen.demo'],
+  ['Quản lý', 'admin@sensen.demo'],
+];
+const DEMO_PASSWORD = 'Sensen@123';
+
+if (new URLSearchParams(location.search).get('demo') === '1' && $('signed-out')) {
+  const box = document.createElement('div');
+  box.className = 'panel';
+  const title = document.createElement('h3');
+  title.textContent = 'Tài khoản demo (bấm để điền sẵn, rồi bấm Đăng nhập)';
+  box.append(title);
+  for (const [label, email] of DEMO_ACCOUNTS) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = `${label}: ${email}`;
+    button.addEventListener('click', () => {
+      $('email').value = email;
+      $('password').value = DEMO_PASSWORD;
+    });
+    box.append(button);
+  }
+  const note = document.createElement('p');
+  note.textContent = `Mật khẩu chung: ${DEMO_PASSWORD}`;
+  box.append(note);
+  $('signed-out').after(box);
+}
 refresh();
