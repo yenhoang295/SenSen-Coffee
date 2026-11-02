@@ -1,5 +1,5 @@
-  #Mặc định: trường nhóm review mọi thay đổi
-* @yenhoang295
-# Theo thư mục (thay bằng username thành viên)
-#/backend/ @lethihuechi16-sen
-# /frontend/ @yenhoang295
+# Người này review thư mục của người kia
+/web/    @lethihuechi16-sen
+/db/     @yenhoang295
+/docs/   @yenhoang295
+*        @yenhoang295
