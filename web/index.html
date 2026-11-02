@@ -4,25 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SENSEN COFFEE</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 0; background: #faf6f1; color: #2b1d14; }
-    header { padding: 24px; background: #3b2416; color: #fff; }
-    main { max-width: 720px; margin: 24px auto; padding: 0 16px; }
-    #queue-banner { padding: 12px 16px; border-radius: 8px; background: #eee; margin-bottom: 16px; }
-    .ok { color: #1a7f37; } .bad { color: #b42318; }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header><h1>SENSEN COFFEE</h1></header>
-  <main>
-    <div id="queue-banner" hidden></div>
-    <p>Trang khởi tạo Ngày 1. Kiểm tra dịch vụ: <span id="health">đang kiểm tra...</span></p>
+  <header class="top">
+    <h1>SENSEN COFFEE</h1>
+    <nav>
+      <a href="menu.html">Menu</a>
+      <a href="login.html">Tài khoản</a>
+    </nav>
+  </header>
+
+  <div id="queue-banner" hidden></div>
+
+  <main style="max-width:720px;margin:24px auto;padding:0 16px">
+    <h2>Đặt đồ uống nhanh, biết trước quán đông hay vắng</h2>
+    <p><a href="menu.html">Xem menu và đặt món</a></p>
+    <p>Kiểm tra dịch vụ: <span id="health">đang kiểm tra...</span></p>
   </main>
-  <script>
+
+  <script type="module">
+    import { captureTable } from './js/cart.js';
+    captureTable();
+
+    const el = document.getElementById('health');
     fetch('/api/health')
       .then(r => r.json())
-      .then(d => { const el = document.getElementById('health'); el.textContent = 'API hoạt động'; el.className = d.ok ? 'ok' : 'bad'; })
-      .catch(() => { const el = document.getElementById('health'); el.textContent = 'API chưa chạy'; el.className = 'bad'; });
+      .then(d => {
+        el.textContent = d.ok ? 'API hoạt động' : 'API lỗi';
+        el.className = d.ok ? 'ok' : 'bad';
+      })
+      .catch(() => {
+        el.textContent = 'API chưa chạy';
+        el.className = 'bad';
+      });
   </script>
 </body>
 </html>
