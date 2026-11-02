@@ -161,6 +161,9 @@ async function submitReservation(event) {
 
 findButton.addEventListener('click', findTables);
 form.addEventListener('submit', submitReservation);
+tableSelect.addEventListener('change', () => {
+  submitButton.disabled = !tableSelect.value;
+});
 
 sizeInput.addEventListener('change', clearAvailableTables);
 timeInput.addEventListener('change', clearAvailableTables);
