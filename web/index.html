@@ -5,23 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SENSEN COFFEE</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme.css">
 </head>
-<body>
-  <header class="top">
-    <h1>SENSEN COFFEE</h1>
-    <nav>
-  <a href="menu.html">Menu</a>
-  <a href="reservation.html">Đặt bàn</a>
-  <a href="advisor.html">Tư vấn</a>
-  <a href="login.html">Tài khoản</a>
-</nav>
-  </header>
+<body class="home">
+  <header class="top"></header>
+
+  <section class="hero">
+    <h1>Cà phê hiện đại, đúng lúc bạn cần.</h1>
+    <p>Đặt món trước và biết quán đang vắng hay đông ngay trước khi bạn ra khỏi nhà.</p>
+    <div class="cta">
+      <a class="btn-outline solid" href="menu.html">Đặt món ngay</a>
+      <a class="btn-outline" href="advisor.html" data-optional="1">Tư vấn đồ uống</a>
+    </div>
+  </section>
+
   <div id="queue-banner" hidden></div>
-  <main style="max-width:720px;margin:24px auto;padding:0 16px">
-    <h2>Đặt đồ uống nhanh, biết trước quán đông hay vắng</h2>
-    <p><a href="menu.html">Xem menu và đặt món</a></p>
-    <p>Kiểm tra dịch vụ: <span id="health">đang kiểm tra...</span></p>
-  </main>
+
+  <section class="strip">
+    <div class="feat"><div class="ico">⏱</div><div><h3>Biết trước quán đông hay vắng</h3><p>Banner xanh, vàng, đỏ cùng thời gian chờ dự kiến, tự tính từ số đơn đang pha.</p></div></div>
+    <div class="feat"><div class="ico">☕</div><div><h3>Đặt món không cần xếp hàng</h3><p>Quét mã QR tại bàn hoặc đặt trước giờ nhận, nhân viên nhận đơn ngay.</p></div></div>
+    <div class="feat"><div class="ico">★</div><div><h3>Ví và điểm thưởng</h3><p>Nạp ví tại quầy, thanh toán nhanh và tích điểm sau mỗi đơn hoàn tất.</p></div></div>
+  </section>
+
+  <section class="explore">
+    <h2>Khám phá SENSEN</h2>
+    <div class="tiles">
+      <a class="tile" href="menu.html"><b>Menu và đặt món</b><span>Xem đồ uống, thêm vào giỏ.</span></a>
+      <a class="tile" href="advisor.html" data-optional="1"><b>Tư vấn đồ uống</b><span>Gợi ý theo khẩu vị của bạn.</span></a>
+      <a class="tile" href="reservation.html"><b>Đặt bàn</b><span>Giữ chỗ trước cho nhóm của bạn.</span></a>
+      <a class="tile" href="group.html" data-optional="1"><b>Đơn nhóm</b><span>Cả bàn cùng thêm món, một đơn chung.</span></a>
+      <a class="tile" href="track.html" data-optional="1"><b>Theo dõi đơn</b><span>Xem đơn đã đến bước nào.</span></a>
+      <a class="tile" href="wallet.html"><b>Ví và điểm</b><span>Số dư, điểm tích lũy.</span></a>
+    </div>
+  </section>
+  <p class="health">Trạng thái hệ thống: <span id="health">đang kiểm tra...</span></p>
+
+  <script type="module" src="js/nav.js"></script>
   <script type="module" src="js/queue.js"></script>
   <script type="module">
     import { captureTable } from './js/cart.js';
