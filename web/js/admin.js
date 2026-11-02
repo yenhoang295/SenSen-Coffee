@@ -1,4 +1,4 @@
-import { getAccessToken, signIn, signOut, getRole } from './session.js';
+import { getAccessToken, signOut, getRole } from './session.js';
 
 const $ = id => document.getElementById(id);
 const money = n => new Intl.NumberFormat('vi-VN').format(n) + ' đ';
@@ -237,37 +237,18 @@ function showTab(name) {
 async function showPanel() {
   const role = await getRole();
 
-  // Nhân viên có trang riêng; chỉ admin mới ở lại trang này.
-  if (role === 'staff') {
-    location.href = 'staff.html';
-    return;
-  }
-  const allowed = role === 'admin';
+  // Chỉ có một trang đăng nhập chung là login.html.
+  if (!role) { location.href = 'login.html'; return; }
+  if (role === 'staff') { location.href = 'staff.html'; return; }
+  if (role !== 'admin') { location.href = 'menu.html'; return; }
 
-  $('login-panel').hidden = allowed;
-  $('panel').hidden = !allowed;
-
-  if (allowed) {
-    showTab('reports');
-  } else if (role) {
-    await signOut();
-    $('login-msg').textContent = 'Tài khoản này không có quyền quản lý.';
-  }
+  $('panel').hidden = false;
+  showTab('reports');
 }
-
-$('login').addEventListener('click', async () => {
-  const error = await signIn($('email').value.trim(), $('password').value);
-  if (error) {
-    $('login-msg').textContent = 'Sai email hoặc mật khẩu.';
-    return;
-  }
-  $('login-msg').textContent = '';
-  showPanel();
-});
 
 $('logout').addEventListener('click', async () => {
   await signOut();
-  showPanel();
+  location.href = 'login.html';
 });
 
 $('report-load').addEventListener('click', loadReport);
