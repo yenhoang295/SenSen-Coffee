@@ -22,18 +22,26 @@ function toLocalInputValue(date) {
 
 function setTimeLimits() {
   const now = new Date();
+
+  // Làm tròn giờ sớm nhất lên mốc 15 phút để khớp với step.
   const min = new Date(now.getTime() + 30 * 60 * 1000);
+  min.setSeconds(0, 0);
+  min.setMinutes(Math.ceil(min.getMinutes() / 15) * 15);
+
   const max = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  max.setSeconds(0, 0);
 
-  timeInput.min = toLocalInputValue(min);
-  timeInput.max = toLocalInputValue(max);
-  timeInput.step = '900';
-
+  // Gợi ý một giờ sau, cũng làm tròn lên mốc 15 phút.
   const suggested = new Date(now.getTime() + 60 * 60 * 1000);
   suggested.setSeconds(0, 0);
   suggested.setMinutes(Math.ceil(suggested.getMinutes() / 15) * 15);
 
-  timeInput.value = toLocalInputValue(suggested);
+  timeInput.min = toLocalInputValue(min);
+  timeInput.max = toLocalInputValue(max);
+  timeInput.step = '900';
+  timeInput.value = toLocalInputValue(
+    suggested < min ? min : suggested
+  );
 }
 
 function clearAvailableTables() {
