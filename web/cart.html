@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Đặt món | SENSEN COFFEE</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>SENSEN COFFEE <small id="table-info"></small></h1>
+    <nav><a href="menu.html">Menu</a><a href="login.html">Tài khoản</a></nav>
+  </header>
+  <div id="queue-banner" hidden></div>
+  <div class="panel" id="empty" hidden>
+    <p>Giỏ hàng đang trống.</p>
+    <a href="menu.html">Quay lại menu</a>
+  </div>
+  <div class="panel" id="form-panel">
+    <h2>Xác nhận đơn</h2>
+    <ul id="summary" class="plain"></ul>
+    <div class="total"><span>Tổng</span><span id="total">0 đ</span></div>
+    <form id="order-form" class="stack">
+      <input id="name" placeholder="Họ tên" required maxlength="60" autocomplete="name">
+      <input id="phone" type="tel" placeholder="Số điện thoại (10 số, bắt đầu bằng 0)" required pattern="0[0-9]{9}" autocomplete="tel">
+      <label>Giờ nhận món
+        <select id="pickup"><option value="">Càng sớm càng tốt</option></select>
+      </label>
+      <textarea id="note" placeholder="Ghi chú (tùy chọn)" maxlength="200" rows="2"></textarea>
+      <fieldset>
+        <legend>Thanh toán</legend>
+        <label><input type="radio" name="pay" value="CASH" checked> Tiền mặt khi nhận món</label>
+        <label><input type="radio" name="pay" value="TRANSFER"> Chuyển khoản</label>
+      </fieldset>
+      <button id="submit" type="submit">Đặt món</button>
+      <p id="message" class="bad" role="status"></p>
+    </form>
+  </div>
+  <div class="panel" id="done" hidden></div>
+  <script type="module" src="js/queue.js"></script>
+  <script type="module" src="js/checkout.js"></script>
+</body>
+</html>
