@@ -37,7 +37,7 @@ body.home header.top { position: absolute; left: 32px; right: 32px; top: 0; padd
   padding: 150px 24px 90px; color: #fff8ea; border-radius: 24px 24px 0 0;
   background: linear-gradient(rgba(25, 14, 6, .4), rgba(25, 14, 6, .62)), url(../images/hero.jpg) center / cover no-repeat,
     radial-gradient(ellipse at 28% 18%, #7d4b27, #2a1c12 72%); }
-.hero h1 { margin: 0; font-size: clamp(40px, 7vw, 84px); line-height: 1.04; font-weight: 700; }
+.hero h1 { margin: 0; max-width: 900px; font-size: clamp(36px, 5.6vw, 68px); line-height: 1.08; font-weight: 700; text-wrap: balance; }
 .hero p { margin: 16px 0 28px; font-size: clamp(17px, 2.2vw, 24px); max-width: 640px; color: #f1e4cd; }
 .hero .cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .btn-outline { display: inline-block; padding: 11px 28px; border: 1px solid rgba(255, 255, 255, .85); border-radius: 999px; color: #fff;
@@ -63,7 +63,7 @@ body.home header.top { position: absolute; left: 32px; right: 32px; top: 0; padd
 
 /* Các trang khác: cùng bảng màu */
 #queue-banner { margin: 20px 32px 0; max-width: none; border-radius: 14px; }
-main.wrap { padding: 0 32px; }
+main.wrap { max-width: none; margin: 20px 0; padding: 0 32px; }
 @media (max-width: 800px) { main.wrap { padding: 0 16px; } #queue-banner { margin: 16px 16px 0; } }
 .card, aside.cart, .panel, .order-card { border-radius: 16px; background: #fffdf8; }
 .card { transition: box-shadow .15s; } .card:hover { box-shadow: 0 8px 20px rgba(60, 35, 15, .12); }
@@ -84,3 +84,7 @@ footer.site-foot a { display: block; color: #f1e4cd; text-decoration: none; padd
 footer.site-foot a:hover, footer.site-foot a.active { color: #fff; text-decoration: underline; }
 @media (max-width: 800px) { footer.site-foot { grid-template-columns: 1fr 1fr; padding: 28px 22px; } }
 @media print { html { background: #fff; padding: 0; } body { box-shadow: none; } footer.site-foot, header.top { display: none; } }
+
+/* Món chưa có ảnh: hiện ô màu be thay vì khoảng trống */
+.thumb-empty { width: 100%; height: 150px; display: grid; place-items: center; font-size: 44px; color: #a8602a;
+  background: linear-gradient(135deg, #efe0c8, #d9bf9a); }

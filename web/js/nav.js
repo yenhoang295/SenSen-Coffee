@@ -104,3 +104,13 @@ settleOptionalLinks();
 
 // Banner "quán đông hay vắng": chỉ nạp khi trang có banner.
 if (document.getElementById('queue-banner')) import('./queue.js').catch(() => {});
+
+// Món chưa có file ảnh: thay ảnh hỏng bằng ô màu be có biểu tượng ly cà phê.
+document.addEventListener('error', e => {
+  const img = e.target;
+  if (!(img instanceof HTMLImageElement) || !img.classList.contains('thumb')) return;
+  const box = document.createElement('div');
+  box.className = 'thumb-empty';
+  box.textContent = '☕';
+  img.replaceWith(box);
+}, true);
